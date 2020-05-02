@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="drawboard"></div>
+    <script type="text/javascript" src="/d3.min.js"></script>
+    <script type="text/javascript" defer>
+      async function init() {
+        const data = await d3.xml("http://localhost:8000/giardini-model-quadrants.svg")
+        d3.select('#drawboard').node().append(data.documentElement)
+        const svg = d3.select('#drawboard svg')
+        const quadrants = svg.select('#Quadrants')
+        const quad = quadrants.selectAll('polyline')
+        quad.style('fill', 'transparent')
+        quad.on('click', function() {
+          console.log('clicked')
+        })
+      }
+      init()
+    </script>
+  </body>
+</html>
