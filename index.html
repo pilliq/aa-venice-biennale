@@ -1,21 +1,44 @@
 <!DOCTYPE html>
 <html>
-  <body>
+
+<head>
+  <link rel="stylesheet" type="text/css" href="sidenav.css">
+</head>
+
+<body>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="#">About</a>
+  </div>
+  <!-- Add all page content inside this div if you want the side nav to push page content to the right (not used if you only want the sidenav to sit on top of the page -->
+  <div id="main">
     <div id="drawboard"></div>
-    <script type="text/javascript" src="/d3.min.js"></script>
-    <script type="text/javascript" defer>
-      async function init() {
-        const data = await d3.xml("http://localhost:8000/giardini-model-quadrants.svg")
-        d3.select('#drawboard').node().append(data.documentElement)
-        const svg = d3.select('#drawboard svg')
-        const quadrants = svg.select('#Quadrants')
-        const quad = quadrants.selectAll('polyline')
-        quad.style('fill', 'transparent')
-        quad.on('click', function() {
-          console.log('clicked')
-        })
-      }
-      init()
-    </script>
-  </body>
+  </div>
+  <script type="text/javascript" src="/d3.min.js"></script>
+  <script type="text/javascript" defer>
+    async function init() {
+      const data = await d3.xml("http://localhost:8000/giardini-model-quadrants.svg")
+      d3.select('#drawboard').node().append(data.documentElement)
+      const svg = d3.select('#drawboard svg')
+      const quadrants = svg.select('#Quadrants')
+      const quad = quadrants.selectAll('polyline')
+      quad.style('fill', 'transparent')
+      quad.on('click', function () {
+        console.log(this.parentElement.id)
+        openNav()
+      })
+    }
+    init()
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "250px";
+      document.getElementById("main").style.marginLeft = "250px";
+    }
+
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+      document.getElementById("main").style.marginLeft = "0";
+    }
+  </script>
+</body>
+
 </html>
