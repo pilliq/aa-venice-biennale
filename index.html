@@ -1,14 +1,31 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <style>
+      svg {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
   <body>
     <div id="drawboard"></div>
     <script type="text/javascript" src="/d3.min.js"></script>
     <script type="text/javascript" defer>
       async function init() {
-        const data = await d3.xml("http://localhost:8000/giardini-model-quadrants.svg")
+        const data = await d3.xml("http://localhost:8000/model.svg")
         d3.select('#drawboard').node().append(data.documentElement)
         const svg = d3.select('#drawboard svg')
-        const quadrants = svg.select('#Quadrants')
+        const content = svg.select('#content')
+        console.log(content)
+        svg.call(
+          d3.zoom()
+            .extent([[0, 0], [window.screen.width, window.screen.height]])
+            .scaleExtent([.5, 5])
+            .on('zoom', function() {
+              svg.attr('transform', d3.event.transform)
+            })
+        )
+        const quadrants = content.select('#Quadrants')
         const quad = quadrants.selectAll('polyline')
         quad.style('fill', 'transparent')
         quad.on('click', function() {
