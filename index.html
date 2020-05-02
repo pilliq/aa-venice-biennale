@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      svg {
-        border: 1px solid black;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="sidenav.css">
+      <style>
+        svg {
+          border: 1px solid black;
+        }
+      </style>
   </head>
+  
   <body>
-    <div id="drawboard"></div>
+    <div id="mySidenav" class="sidenav">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+      <a href="#">About</a>
+    </div>
+    <div id="main">
+      <div id="drawboard"></div>
+    </div>
     <script type="text/javascript" src="/d3.min.js"></script>
     <script type="text/javascript" defer>
       async function init() {
-        const data = await d3.xml("http://localhost:8000/model.svg")
+        const data = await d3.xml("http://localhost:8000/giardini-model-quadrants.svg")
         d3.select('#drawboard').node().append(data.documentElement)
         const svg = d3.select('#drawboard svg')
-        const content = svg.select('#content')
-        console.log(content)
         svg.call(
           d3.zoom()
             .extent([[0, 0], [window.screen.width, window.screen.height]])
@@ -25,14 +31,24 @@
               svg.attr('transform', d3.event.transform)
             })
         )
-        const quadrants = content.select('#Quadrants')
+        const quadrants = svg.select('#Quadrants')
         const quad = quadrants.selectAll('polyline')
         quad.style('fill', 'transparent')
-        quad.on('click', function() {
-          console.log('clicked')
+        quad.on('click', function () {
+          console.log(this.parentElement.id)
+          openNav()
         })
       }
       init()
+      function openNav() {
+        document.getElementById("mySidenav").style.width = "250px";
+        document.getElementById("main").style.marginLeft = "250px";
+      }
+  
+      function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("main").style.marginLeft = "0";
+      }
     </script>
   </body>
 </html>
