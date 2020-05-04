@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" type="text/css" href="sidenav.css">
+    <link rel="stylesheet" type="text/css" href="./sidenav.css">
       <style>
         svg {
           border: 1px solid black;
@@ -12,43 +12,67 @@
   <body>
     <div id="mySidenav" class="sidenav">
       <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <a href="#">About</a>
+      <a href="#">
+        <div id="block-text" style="width:50px;height:50px"></div>
+        <div id="block" style="width:50px;height:50px"></div>
+      </a>
     </div>
     <div id="main">
       <div id="drawboard"></div>
     </div>
-    <script type="text/javascript" src="/d3.min.js"></script>
+    <script type="text/javascript" src="./d3.min.js"></script>
     <script type="text/javascript" defer>
-      async function init() {
-        const data = await d3.xml("http://localhost:8000/giardini-model-quadrants.svg")
-        d3.select('#drawboard').node().append(data.documentElement)
-        const svg = d3.select('#drawboard svg')
-        svg.call(
-          d3.zoom()
-            .extent([[0, 0], [window.screen.width, window.screen.height]])
-            .scaleExtent([.5, 5])
-            .on('zoom', function() {
-              svg.attr('transform', d3.event.transform)
-            })
-        )
-        const quadrants = svg.select('#Quadrants')
-        const quad = quadrants.selectAll('polyline')
-        quad.style('fill', 'transparent')
-        quad.on('click', function () {
-          console.log(this.parentElement.id)
-          openNav()
-        })
-      }
-      init()
       function openNav() {
         document.getElementById("mySidenav").style.width = "250px";
         document.getElementById("main").style.marginLeft = "250px";
       }
-  
+
       function closeNav() {
         document.getElementById("mySidenav").style.width = "0";
         document.getElementById("main").style.marginLeft = "0";
       }
+
+      const key = {
+        'LWPOLYLINE-5': 'Top left square with some text',
+        'LWPOLYLINE-4': 'The second square with some text',
+        'LWPOLYLINE-3': 'Third square',
+        'LWPOLYLINE-8': 'This is the fourth',
+        'LWPOLYLINE-7': 'And the fifth',
+        'LWPOLYLINE-6': 'Number 6',
+        'LWPOLYLINE-11': 'The seventh square with text',
+        'LWPOLYLINE-10': 'And the eightth (thats defs spelt wrong)',
+        'LWPOLYLINE-9': 'The ninethe',
+        'LWPOLYLINE-14': 'and the tenth',
+        'LWPOLYLINE-13': 'One for eleven',
+        'LWPOLYLINE-12': 'And another for 12',
+      }
+
+      async function init() {
+        const data = await d3.xml("./giardini-model-quadrants.svg")
+        d3.select('#drawboard').node().append(data.documentElement)
+        const svg = d3.select('#drawboard svg')
+        const zoom = d3.zoom()
+          //.extent([[0, 0], [window.screen.width, window.screen.height]])
+          .scaleExtent([.5, 5])
+          .on('zoom', function() {
+            svg.attr('transform', d3.event.transform)
+          })
+        svg.call(zoom)
+        svg.call(zoom.scaleBy, 0.5)
+        const quadrants = svg.select('#Quadrants')
+        const quad = quadrants.selectAll('polyline')
+        d3.schemeSet3
+        quad.style('fill', 'transparent')
+        quad.on('click', function (d,i) {
+          console.log(d,i)
+          d3.select('#block')
+            .style('background-color', d3.schemeSet3[(+key[this.parentElement.id])-1])
+          d3.select('#block-text')
+            .text(key[this.parentElement.id])
+          openNav()
+        })
+      }
+      init()
     </script>
   </body>
 </html>
