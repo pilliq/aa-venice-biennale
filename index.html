@@ -47,8 +47,40 @@
         'LWPOLYLINE-12': 'And another for 12',
       }
 
+      const addClip = (svg, id) => {
+        const circle = svg.select('defs').append('clipPath')
+          .attr('id', 'mask')
+        .append('circle')
+          .attr('id', 'mask-circle')
+          .attr('cx', '50%')
+          .attr('cy', '50%')
+          .attr('r', '8%')
+          .style('fill', '#ffffff')
+        d3.select(id).attr('clip-path', 'url(#mask)')
+        const shadow = svg.append('circle')
+          .attr('id', 'mask-shadow')
+          .attr('cx', '50%')
+          .attr('cy', '50%')
+          .attr('r', '8%')
+          .style('stroke', '#000')
+          .style('fill', 'transparent')
+          .style('stroke-width', '3')
+        window.addEventListener('mousemove', function(e) {
+          const point = svg.node().createSVGPoint()
+          point.x = e.clientX
+          point.y = e.clientY
+          const coords = point.matrixTransform(svg.node().getScreenCTM().inverse())
+          circle
+            .attr('cx', coords.x)
+            .attr('cy', coords.y)
+          shadow
+            .attr('cx', coords.x)
+            .attr('cy', coords.y)
+        })
+      }
+
       async function init() {
-        const data = await d3.xml("./giardini-model-quadrants.svg")
+        const data = await d3.xml("./model.svg")
         d3.select('#drawboard').node().append(data.documentElement)
         const svg = d3.select('#drawboard svg')
         const zoom = d3.zoom()
@@ -71,6 +103,7 @@
             .text(key[this.parentElement.id])
           openNav()
         })
+        addClip(svg, '#New_Interventions')
       }
       init()
     </script>
