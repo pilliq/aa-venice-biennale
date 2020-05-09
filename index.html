@@ -1,113 +1,130 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <link rel="stylesheet" type="text/css" href="./sidenav.css">
-      <style>
-        svg {
-          border: 1px solid black;
-        }
-      </style>
-  </head>
-  
-  <body>
-    <div id="mySidenav" class="sidenav">
-      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-      <a href="#">
-        <div id="block-text" style="width:50px;height:50px"></div>
-        <div id="block" style="width:50px;height:50px"></div>
-      </a>
-    </div>
-    <div id="main">
-      <div id="drawboard"></div>
-    </div>
-    <script type="text/javascript" src="./d3.min.js"></script>
-    <script type="text/javascript" defer>
-      function openNav() {
-        document.getElementById("mySidenav").style.width = "250px";
-        document.getElementById("main").style.marginLeft = "250px";
-      }
 
-      function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
-        document.getElementById("main").style.marginLeft = "0";
-      }
+<head>
+  <link rel="stylesheet" type="text/css" href="./main.css">
+  <style>
+    svg {
+      border: 1px solid black;
+    }
+  </style>
+</head>
 
-      const key = {
-        'LWPOLYLINE-5': 'Top left square with some text',
-        'LWPOLYLINE-4': 'The second square with some text',
-        'LWPOLYLINE-3': 'Third square',
-        'LWPOLYLINE-8': 'This is the fourth',
-        'LWPOLYLINE-7': 'And the fifth',
-        'LWPOLYLINE-6': 'Number 6',
-        'LWPOLYLINE-11': 'The seventh square with text',
-        'LWPOLYLINE-10': 'And the eightth (thats defs spelt wrong)',
-        'LWPOLYLINE-9': 'The ninethe',
-        'LWPOLYLINE-14': 'and the tenth',
-        'LWPOLYLINE-13': 'One for eleven',
-        'LWPOLYLINE-12': 'And another for 12',
-      }
+<body>
+  <div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <a href="#">
+      <div id="nav-content-block-img">
+        <img src="media/navbar-stock1.png" id="nav-content-img">
+      </div>
+      <div id="nav-content-text">The philosophy of architecture is a branch of philosophy of art, dealing with
+        aesthetic value of architecture, its
+        semantics and relations with development of culture. Many philosophers and theoreticians frome Plato to Michel
+        Foucault,
+        Gilles Deleuze, Robert Venturi and Ludwig Wittgenstein have concerned thesemselves with the nature of
+        architecture and
+        whether or not architecture is distinguished from building.</div>
+      <div id="block-text" style="width:50px;height:50px"></div>
+      <div id="block" style="width:50px;height:50px"></div>
+    </a>
+  </div>
+  <div id="main">
+    <div id="drawboard"></div>
+  </div>
+  <img src="media/logo.png" id="absolute-logo">
+  <div id="footer">
+    <div class="footer-text">Connections</div>
+    <div class="footer-text">Explore Existing</div>
+    <div class="footer-text">Prototypes Library</div>
+    <div id="footer-about-text">About</div>
+  </div>
+  <script type="text/javascript" src="./d3.min.js"></script>
+  <script type="text/javascript" defer>
+    function openNav() {
+      document.getElementById("mySidenav").style.width = "28%";
+    }
 
-      const addClip = (svg, id) => {
-        const circle = svg.select('defs').append('clipPath')
-          .attr('id', 'mask')
+    function closeNav() {
+      document.getElementById("mySidenav").style.width = "0";
+    }
+
+    const key = {
+      'LWPOLYLINE-5': 'Top left square with some text',
+      'LWPOLYLINE-4': 'The second square with some text',
+      'LWPOLYLINE-3': 'Third square',
+      'LWPOLYLINE-8': 'This is the fourth',
+      'LWPOLYLINE-7': 'And the fifth',
+      'LWPOLYLINE-6': 'Number 6',
+      'LWPOLYLINE-11': 'The seventh square with text',
+      'LWPOLYLINE-10': 'And the eightth (thats defs spelt wrong)',
+      'LWPOLYLINE-9': 'The ninethe',
+      'LWPOLYLINE-14': 'and the tenth',
+      'LWPOLYLINE-13': 'One for eleven',
+      'LWPOLYLINE-12': 'And another for 12',
+    }
+
+    const addClip = (svg, id) => {
+      const circle = svg.select('defs').append('clipPath')
+        .attr('id', 'mask')
         .append('circle')
-          .attr('id', 'mask-circle')
-          .attr('cx', '50%')
-          .attr('cy', '50%')
-          .attr('r', '8%')
-          .style('pointer-events', 'none')
-          .style('fill', '#ffffff')
-        d3.select(id).attr('clip-path', 'url(#mask)')
-        const shadow = svg.append('circle')
-          .attr('id', 'mask-shadow')
-          .attr('cx', '50%')
-          .attr('cy', '50%')
-          .attr('r', '8%')
-          .style('pointer-events', 'none')
-          .style('stroke', '#000')
-          .style('fill', 'transparent')
-          .style('stroke-width', '3')
-        window.addEventListener('mousemove', function(e) {
-          const point = svg.node().createSVGPoint()
-          point.x = e.clientX
-          point.y = e.clientY
-          const coords = point.matrixTransform(svg.node().getScreenCTM().inverse())
-          circle
-            .attr('cx', coords.x)
-            .attr('cy', coords.y)
-          shadow
-            .attr('cx', coords.x)
-            .attr('cy', coords.y)
-        })
-      }
+        .attr('id', 'mask-circle')
+        .attr('cx', '50%')
+        .attr('cy', '50%')
+        .attr('r', '8%')
+        .style('pointer-events', 'none')
+        .style('fill', '#ffffff')
+      d3.select(id).attr('clip-path', 'url(#mask)')
+      const shadow = svg.append('circle')
+        .attr('id', 'mask-shadow')
+        .attr('cx', '50%')
+        .attr('cy', '50%')
+        .attr('r', '8%')
+        .style('pointer-events', 'none')
+        .style('stroke', '#000')
+        .style('fill', 'transparent')
+        .style('stroke-width', '3')
+      window.addEventListener('mousemove', function (e) {
+        const point = svg.node().createSVGPoint()
+        point.x = e.clientX
+        point.y = e.clientY
+        const coords = point.matrixTransform(svg.node().getScreenCTM().inverse())
+        circle
+          .attr('cx', coords.x)
+          .attr('cy', coords.y)
+        shadow
+          .attr('cx', coords.x)
+          .attr('cy', coords.y)
+      })
+    }
 
-      async function init() {
-        const data = await d3.xml("./model.svg")
-        d3.select('#drawboard').node().append(data.documentElement)
-        const svg = d3.select('#drawboard svg')
-        const zoom = d3.zoom()
-          //.extent([[0, 0], [window.screen.width, window.screen.height]])
-          .scaleExtent([.5, 5])
-          .on('zoom', function() {
-            svg.attr('transform', d3.event.transform)
-          })
-        svg.call(zoom)
-        svg.call(zoom.scaleBy, 0.5)
-        const quadrants = svg.select('#Quadrants')
-        const quad = quadrants.selectAll('polyline')
-        d3.schemeSet3
-        quad.style('fill', 'transparent')
-        quad.on('click', function (d,i) {
-          console.log(d,i)
-          d3.select('#block')
-            .style('background-color', d3.schemeSet3[(+key[this.parentElement.id])-1])
-          d3.select('#block-text')
-            .text(key[this.parentElement.id])
-          openNav()
+    async function init() {
+      const data = await d3.xml("./model.svg")
+      d3.select('#drawboard').node().append(data.documentElement)
+      const svg = d3.select('#drawboard svg')
+      const zoom = d3.zoom()
+        //.extent([[0, 0], [window.screen.width, window.screen.height]])
+        .scaleExtent([.5, 5])
+        .on('zoom', function () {
+          svg.attr('transform', d3.event.transform)
         })
-        addClip(svg, '#New_Interventions')
-      }
-      init()
-    </script>
-  </body>
+      svg.call(zoom)
+      svg.call(zoom.scaleBy, 0.5)
+      const quadrants = svg.select('#Quadrants')
+      const quad = quadrants.selectAll('polyline')
+      d3.schemeSet3
+      quad.style('fill', 'transparent')
+      quad.on('click', function (d, i) {
+        console.log(d, i)
+        d3.select('#block')
+          .style('background-color', d3.schemeSet3[(+key[this.parentElement.id]) - 1])
+        d3.select('#block-text')
+          .text(key[this.parentElement.id])
+        openNav()
+      })
+      addClip(svg, '#New_Interventions')
+    }
+    init()
+  </script>
+</body>
+
 </html>
