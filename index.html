@@ -11,6 +11,35 @@
 </head>
 
 <body>
+  <div id="on-load-modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <p class="modal-intro-content">The philosophy of architecture is a branch of philosophy of art, dealing with
+        aesthetic value of architecture, its
+        semantics and relations with development of culture. Many philosophers and theoreticians frome Plato to Michel
+        Foucault,
+        Gilles Deleuze, Robert Venturi and Ludwig Wittgenstein have concerned thesemselves with the nature of
+        architecture and
+        whether or not architecture is distinguished from building.
+      </p>
+      <p class="modal-intro-content">The philosophy of architecture is a branch of philosophy of art, dealing with
+        aesthetic value of architecture, its
+        semantics and relations with development of culture. Many philosophers and theoreticians frome Plato to Michel
+        Foucault,
+        Gilles Deleuze, Robert Venturi and Ludwig Wittgenstein have concerned thesemselves with the nature of
+        architecture and
+        whether or not architecture is distinguished from building.
+      </p>
+      <p class="modal-intro-content">The philosophy of architecture is a branch of philosophy of art, dealing with
+        aesthetic value of architecture, its
+        semantics and relations with development of culture. Many philosophers and theoreticians frome Plato to Michel
+        Foucault,
+        Gilles Deleuze, Robert Venturi and Ludwig Wittgenstein have concerned thesemselves with the nature of
+        architecture and
+        whether or not architecture is distinguished from building.
+      </p>
+    </div>
+  </div>
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
     <a href="#">
@@ -38,8 +67,21 @@
     <div class="footer-text">Prototypes Library</div>
     <div id="footer-about-text">About</div>
   </div>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="./d3.min.js"></script>
   <script type="text/javascript" defer>
+    var modal = document.getElementById("on-load-modal");
+    var modal_close = document.getElementsByClassName("modal-close")[0];
+    modal_close.onclick = function () {
+      modal.style.display = "none";
+    }
+
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
     function openNav() {
       document.getElementById("mySidenav").style.width = "28%";
     }

@@ -2,6 +2,45 @@ body {
   font-family: "Lato", sans-serif;
 }
 
+.modal {
+  display: block;
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+}
+
+.modal-content {
+  background-color: rgba(0, 0, 0, 0.301);
+  margin: auto;
+  padding: 20px;
+  width: 80%;
+}
+
+.modal-close {
+  color: black;
+  float: right;
+  font-size: 62px;
+  font-weight: 100;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+  color: rgba(255, 255, 255, 0.87);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.modal-intro-content {
+  color:rgba(255, 255, 255, 0.87);
+  font-size: 26px;
+  font-weight: 100;
+}
+
 .sidenav {
   height: 100%;
   width: 0;
