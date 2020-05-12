@@ -5,9 +5,6 @@
   <link rel="shortcut icon" href="./favicon.ico">
   <link rel="stylesheet" type="text/css" href="./main.css">
   <style>
-    svg {
-      border: 1px solid black;
-    }
     body {
       padding: 0;
       margin: 0;
@@ -87,6 +84,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="./d3.min.js"></script>
   <script type="text/javascript" src="./openseadragon.min.js"></script>
+  <script type="text/javascript" src="./openseadragon-svg-overlay.js"></script>
   <script type="text/javascript" defer>
     var modal = document.getElementById("on-load-modal");
     var modal_close = document.getElementsByClassName("modal-close")[0];
@@ -95,21 +93,20 @@
     }
 
     // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function (event) {
-      if (event.target == modal) {
+    window.onclick = e => {
+      if (e.target == modal) {
         modal.style.display = "none";
       }
     }
-    function openNav() {
-      document.getElementById("mySidenav").style.width = "28%";
-    }
-
-    function closeNav() {
-      document.getElementById("mySidenav").style.width = "0";
-    }
+    const openNav = () => document.getElementById("mySidenav").style.width = "28%"
+    const closeNav = () => document.getElementById("mySidenav").style.width = "0"
 
     async function init() {
-      OpenSeadragon({
+      const editMode = false
+      let mouseNavEnabled = !editMode
+      let showAll = false
+
+      const viewer = OpenSeadragon({
         id: 'model',
         prefixUrl: './model_files/',
         tileSources: './model.dzi',
@@ -117,9 +114,111 @@
         showNavigationControl: false,
         showZoomControl: false,
         showFullPageControl: false,
+
+        animationTime: 1,
+        springStiffness: 30,
+        zoomPerClick: 1, // effectively disable click to zoom
+
+        // disabled when in edit mode
+        mouseNavEnabled,
       })
+      const overlay = d3.select(viewer.svgOverlay().node())
+      $(window).resize(() => viewer.svgOverlay().resize())
+
+      const setMatrix = (selection, mat) => {
+        selection.attr('transform', `matrix(${mat.a},${mat.b},${mat.c},${mat.d},${mat.e},${mat.f})`)
+      }
+
+      //const data = await d3.xml('./connections-outlines-small-inline.svg')
+      const data = await d3.xml('./outlines.svg')
+      const map = overlay.append('g')
+      d3.select(data).selectAll('g')
+        .each(function() {
+          map.node().appendChild(this)
+        })
+      // Quadrant selector for elements with ids like '#Outline_x5F_Anna'
+      d3.selectAll('[id^="Outline_x5F_"]')
+        .style('visibility', 'hidden')
+        .style('pointer-events', 'all')
+        .on('mouseover', function() { d3.select(this).style('visibility', 'visible') })
+        .on('mouseout', function() { d3.select(this).style('visibility', 'hidden') })
+        .on('click', function() {
+          console.log('click')
+        })
+
+      // Set overlays to manually-determined position
+      let mat = overlay.node().getScreenCTM().inverse()
+      map.attr('transform', 'matrix(0.0014075787724075425,0,0,0.0014075787724075425,0.1329509883327092,0.014575898199770098)')
+      mat = map.node().transform.baseVal.consolidate().matrix
+
+      // Edit tools
+      if (editMode) {
+        const svg = d3.select(overlay.node().parentNode)
+        map.call(
+          d3.drag()
+            .on('drag', function() {
+              const pt = svg.node().createSVGPoint()
+              pt.x = d3.event.x
+              pt.y = d3.event.y
+              const tpt = pt.matrixTransform(mat.inverse()) // transformed point
+              mat = mat.translate(tpt.x, tpt.y)
+              setMatrix(d3.select(this), mat)
+              console.log(this)
+            })
+        )
+        document.addEventListener('keydown', e => {
+          if (e.code === 'ArrowUp') {
+            mat = mat.scale(1.01)
+            setMatrix(map, mat)
+            console.log(map.node())
+          }
+          if (e.code === 'ArrowDown') {
+            mat = mat.scale(.99)
+            setMatrix(map, mat)
+            console.log(map.node())
+          }
+          if (e.code === 'KeyE') {
+            mouseNavEnabled = !mouseNavEnabled
+            viewer.setMouseNavEnabled(mouseNavEnabled)
+            console.log(map.node())
+          }
+          if (e.code === 'KeyW') {
+            mat = mat.translate(0,-.5)
+            setMatrix(map, mat)
+            console.log(map.node())
+          }
+          if (e.code === 'KeyS') {
+            mat = mat.translate(0,.5)
+            setMatrix(map, mat)
+            console.log(map.node())
+          }
+          if (e.code === 'KeyA') {
+            mat = mat.translate(-.5,0)
+            setMatrix(map, mat)
+            console.log(map.node())
+          }
+          if (e.code === 'KeyD') {
+            mat = mat.translate(.5,0)
+            setMatrix(map, mat)
+            console.log(map.node())
+          }
+          if (e.code === 'KeyT') {
+            if (showAll) {
+              d3.selectAll('[id^="Outline_x5F_"]')
+                .style('visibility', 'hidden')
+                .style('pointer-events', 'all')
+              showAll = false
+            } else {
+              d3.selectAll('[id^="Outline_x5F_"]')
+                .style('visibility', 'visible')
+                .style('pointer-events', 'none')
+              showAll = true
+            }
+          }
+        })
+      }
     }
-    init()
+    $(document).ready(() => init())
   </script>
 </body>
 
