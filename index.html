@@ -55,20 +55,17 @@
   </div>
   <div id="mySidenav" class="sidenav">
     <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a href="#">
+    <div class="content">
       <div id="nav-content-block-img">
-        <img src="media/navbar-stock1.png" id="nav-content-img">
+        <a id="main-img-link" target="_blank">
+          <img id="main-img">
+        </a>
       </div>
-      <div id="nav-content-text">The philosophy of architecture is a branch of philosophy of art, dealing with
-        aesthetic value of architecture, its
-        semantics and relations with development of culture. Many philosophers and theoreticians frome Plato to Michel
-        Foucault,
-        Gilles Deleuze, Robert Venturi and Ludwig Wittgenstein have concerned thesemselves with the nature of
-        architecture and
-        whether or not architecture is distinguished from building.</div>
+      <div id="project-description"></div>
       <div id="block-text" style="width:50px;height:50px"></div>
-      <div id="block" style="width:50px;height:50px"></div>
-    </a>
+      <div id="extra-images"></div>
+      <div id="block" style="width:50px;height:170px"></div>
+    </div>
   </div>
   <div id="main">
     <div id="model">
@@ -76,16 +73,71 @@
   </div>
   <img src="media/logo.png" id="absolute-logo">
   <div id="footer">
-    <div class="footer-text">Connections</div>
-    <div class="footer-text">Explore Existing</div>
-    <div class="footer-text">Prototypes Library</div>
-    <div id="footer-about-text">About</div>
+    <div class="footer-text">
+      <a id="connections-button" class="footer-link">Connections</a>
+    </div>
+    <div class="footer-text">
+      <a id="explore-existing-button" class="footer-link">Explore Existing</a>
+    </div>
+      <div class="footer-text">
+        <a id="prototype-button" class="footer-link">Prototypes Library</a>
+    </div>
+    <div id="footer-about-text">
+      <a id="about-button" class="footer-link">About</a>
+    </div>
   </div>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script type="text/javascript" src="./d3.min.js"></script>
   <script type="text/javascript" src="./openseadragon.min.js"></script>
   <script type="text/javascript" src="./openseadragon-svg-overlay.js"></script>
   <script type="text/javascript" defer>
+    const OUTLINE_ID_PREFIX = 'Outline_x5F_'
+    const editMode = false
+    let mouseNavEnabled = !editMode
+
+    const viewer = OpenSeadragon({
+      id: 'model',
+      prefixUrl: './model_files/',
+      tileSources: './model.dzi',
+
+      showNavigationControl: false,
+      showZoomControl: false,
+      showFullPageControl: false,
+
+      animationTime: 1,
+      springStiffness: 30,
+      zoomPerClick: 1, // effectively disable click to zoom
+
+      // disabled when in edit mode
+      mouseNavEnabled,
+    })
+
+    // FOOTER
+    const createFooter = () => {
+      const buttons = {
+        'connections-button': 'Connections',
+        'explore-existing-button': 'Explore Existing',
+        'prototype-button': 'Prototypes Library',
+        'about-button': 'About',
+      }
+      const frag = document.createDocumentFragment()
+      Object.keys(buttons).map(k => {
+        const button = d3.select(document.createElement('div'))
+        if (k === 'about-button') {
+          button.attr('id', 'footer-about-text')
+        } else {
+          button.attr('class', 'footer-text')
+        }
+        button.append('a')
+          .attr('id', k)
+          .attr('class', 'footer-link')
+          .text(buttons[k])
+        frag.appendChild(button.node())
+      })
+      return frag.children
+    }
+
+    // MODAL
     var modal = document.getElementById("on-load-modal");
     var modal_close = document.getElementsByClassName("modal-close")[0];
     modal_close.onclick = function () {
@@ -98,30 +150,160 @@
         modal.style.display = "none";
       }
     }
-    const openNav = () => document.getElementById("mySidenav").style.width = "28%"
-    const closeNav = () => document.getElementById("mySidenav").style.width = "0"
 
+    // SIDE NAV
+    const openNav = () => document.getElementById("mySidenav").style.width = "28%"
+    const closeNav = () => {
+      if (selectedOutline) {
+        unfreezeOutline()
+      }
+      document.getElementById("mySidenav").style.width = "0"
+    }
+
+    // return the thumb url for a given image url
+    const thumb = path => {
+      const tmp = path.split('/')
+      tmp.splice(2, 0, 'thumbs')
+      return tmp.join('/')
+    }
+
+    // OUTLINES
+    let selectedOutline = null
+    const setMainImg = url => {
+      $('#main-img').attr('src', url)
+      $('#main-img-link').attr('href', url)
+    }
+    const setSidebarStudent = studentData => {
+      setMainImg(studentData.main_image)
+      $('#project-description').text(studentData.description)
+      const images = [studentData.main_image, ...studentData.extra_images]
+      const container = d3.select('#extra-images')
+      container.selectAll('*').remove()
+      const imgs = container.selectAll('div.img')
+        .data(images)
+        .join('div')
+          .attr('class', (d,i) => i === 0 ? 'img selected-thumbnail' : 'img')
+          .style('background-image', d => `url("${thumb(d)}")`)
+          .style('cursor', 'pointer')
+          .on('click', function(d) {
+            $(this).parent().find('.selected-thumbnail').removeClass('selected-thumbnail')
+            $(this).addClass('selected-thumbnail')
+            setMainImg(d)
+          })
+    }
+
+    const freezeOutline = outlineId => {
+      d3.select(`#${outlineId}`)
+        .style('visibility', 'visible')
+        .on('mouseout', null)
+      selectedOutline = outlineId
+    }
+
+    const onOutlineOver = function() { d3.select(this).style('visibility', 'visible') }
+    const onOutlineOut = function() { d3.select(this).style('visibility', 'hidden') }
+
+    // unfreeze the globally selected outline
+    // if outlineId provided, unfreeze provided outlineId instead
+    const unfreezeOutline = outlineId => {
+      if (outlineId) {
+        d3.select(`#${outlineId}`)
+          .style('visibility', 'hidden')
+          .on('mouseout', onOutlineOut)
+        if (outlineId === selectedOutline) {
+          selectedOutline = null
+        }
+      } else if (selectedOutline) {
+        d3.select(`#${selectedOutline}`)
+          .style('visibility', 'hidden')
+          .on('mouseout', onOutlineOut)
+        selectedOutline = null
+      }
+    }
+
+    const selectOutline = (data, outlineId) => {
+      const parts = outlineId.split('_')
+      const name = parts[parts.length-1]
+      // find corresponding data
+      const [student] = data.filter(d => d.name === name)
+      if (selectedOutline) {
+        unfreezeOutline()
+      }
+      freezeOutline(outlineId)
+      setSidebarStudent(student)
+      openNav()
+    }
+
+    const closePrototypesGallery = () => {
+      $('#footer').css('overflow', 'hidden')
+      $('#footer').animate({
+        height: '10vh'
+      }, 1000, () => {
+        $('#footer').html(createFooter())
+        unfreezeOutline()
+      })
+    }
+
+    const createPrototypesGallery = data => {
+      const images = data.flatMap(d =>
+        d.prototype_images.map(pi => ({
+          id: `${OUTLINE_ID_PREFIX}${d.name}`,
+          url: pi,
+        }))
+      )
+      const container = d3.select(document.createElement('div'))
+        .attr('id', 'prototype-gallery-container')
+
+      container.append('div')
+        .attr('class', 'close-btn-container')
+      .append('span')
+        .html('&larr; Return')
+        .style('color', 'white')
+        .style('cursor', 'pointer')
+        .on('click', closePrototypesGallery)
+
+      const gallery = container.append('div')
+        .attr('id', 'prototype-img-container')
+
+      gallery.selectAll('img').data(images)
+        .join('img')
+          .attr('src', d => d.url)
+          .attr('height', 100)
+          .style('cursor', 'pointer')
+          .on('click', function(d) {
+            unfreezeOutline()
+            freezeOutline(d.id)
+            d3.select(this.parentNode).selectAll('.selected-prototype-img')
+              .attr('class', null)
+              .attr('height', 100)
+            d3.select(this)
+              .attr('class', 'selected-prototype-img')
+              .attr('height', 350)
+            viewer.viewport.goHome()
+            viewer.viewport.panTo(new OpenSeadragon.Point(.5,1.05)) // center and slightly downwards bottom
+            viewer.viewport.zoomTo(.2)
+            console.log(viewer.viewport.getCenter())
+          })
+
+      return container.node()
+    }
+
+    // INIT
     async function init() {
-      const editMode = false
-      let mouseNavEnabled = !editMode
       let showAll = false
 
-      const viewer = OpenSeadragon({
-        id: 'model',
-        prefixUrl: './model_files/',
-        tileSources: './model.dzi',
+      // Get data
+      const data = await d3.json('./data/data.json')
 
-        showNavigationControl: false,
-        showZoomControl: false,
-        showFullPageControl: false,
-
-        animationTime: 1,
-        springStiffness: 30,
-        zoomPerClick: 1, // effectively disable click to zoom
-
-        // disabled when in edit mode
-        mouseNavEnabled,
+      const prototypesGallery = createPrototypesGallery(data)
+      $(document).on('click', '#prototype-button', function() {
+        $('#footer').css('overflow', 'scroll')
+        $('#footer').animate({
+          height: '45vh',
+        }, 1000, () => {
+          $('#footer').html(prototypesGallery)
+        })
       })
+
       const overlay = d3.select(viewer.svgOverlay().node())
       $(window).resize(() => viewer.svgOverlay().resize())
 
@@ -129,24 +311,21 @@
         selection.attr('transform', `matrix(${mat.a},${mat.b},${mat.c},${mat.d},${mat.e},${mat.f})`)
       }
 
-      //const data = await d3.xml('./connections-outlines-small-inline.svg')
-      const data = await d3.xml('./outlines.svg')
+      const outlines = await d3.xml('./outlines.svg')
       const map = overlay.append('g')
-      d3.select(data).selectAll('g')
+      d3.select(outlines).selectAll('g')
         .each(function() {
           map.node().appendChild(this)
         })
       // Quadrant selector for elements with ids like '#Outline_x5F_Anna'
-      d3.selectAll('[id^="Outline_x5F_"]')
+      d3.selectAll(`[id^="${OUTLINE_ID_PREFIX}"]`)
         .style('visibility', 'hidden')
         .style('pointer-events', 'all')
-        .on('mouseover', function() { d3.select(this).style('visibility', 'visible') })
-        .on('mouseout', function() { d3.select(this).style('visibility', 'hidden') })
-        .on('click', function() {
-          console.log('click')
-        })
+        .on('mouseover', onOutlineOver)
+        .on('mouseout', onOutlineOut)
+        .on('click', function() { selectOutline(data, d3.select(this).attr('id')) })
 
-      // Set overlays to manually-determined position
+      // Set outlines to manually-determined position
       let mat = overlay.node().getScreenCTM().inverse()
       map.attr('transform', 'matrix(0.0014075787724075425,0,0,0.0014075787724075425,0.1329509883327092,0.014575898199770098)')
       mat = map.node().transform.baseVal.consolidate().matrix

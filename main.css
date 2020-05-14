@@ -42,26 +42,21 @@ body {
 }
 
 .sidenav {
-  height: 100%;
+  height: 100vh;
   width: 0;
   position: fixed;
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: rgba(24, 23, 23, 0.575);
+  background-color: rgba(24, 23, 23, .8);
   overflow-x: hidden;
-  transition: 0.5s;
   padding-top: 60px;
 }
 
-.sidenav a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
+.sidenav .content {
+  padding: 3em;
   font-size: 15px;
-  /*color: #818181; */
   color: white;
-  display: block;
-  transition: 0.3s;
 }
 
 .sidenav a:hover {
@@ -74,22 +69,45 @@ body {
   right: 25px;
   font-size: 36px;
   margin-left: 50px;
+  text-decoration: none;
+  transition: 0.3s;
+  color: white;
+  display: block;
 }
 
 #nav-content-block-img {
-    margin-right:-12%;
+  margin-right:-12%;
 }
 
-#nav-content-img {
+#main-img {
   padding-bottom: 5px;
   width: 81%;
 }
 
-#nav-content-text {
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 15px;
+#extra-images {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#extra-images .img {
+  margin-right: 1em;
+  margin-bottom: 1em;
+  background-size: cover;
+  background-position: center;
+  width: 100px;
+  height: 100px;
+  /* https://stackoverflow.com/questions/15920775/image-decode-times-from-chrome-timeline-dev-tool */
+  /* used to cache image decode, since some of these images are too big */
+  -webkit-transform : translate3d(0,0,0);
+  transform : translate3d(0,0,0);
+}
+
+#project-description {
+  font-family: Helvetica, sans-serif;
+  font-size: 16px;
   color: white;
   padding-top: 4%;
+  line-height: 1.5;
 }
 
 #absolute-logo{
@@ -111,15 +129,16 @@ body {
 
 @media screen and (max-height: 450px) {
   .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
+  .sidenav .content {font-size: 18px;}
 }
 
 #footer {
+  z-index: 1;
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 10%;
+  height: 10vh;
   text-align: left;
   background-color: #d2232a;
   font-family: Arial, Helvetica, sans-serif;
@@ -128,13 +147,40 @@ body {
 }
 
 .footer-text {
-    padding-top: 2%;
-    padding-left: 5%;
-    display:inline-block
+  padding-top: 2%;
+  padding-left: 5%;
+  display:inline-block
 }
 
 #footer-about-text {
-    padding-top: 2%;
-    padding-left: 45%;
-    display:inline-block;
+  padding-top: 2%;
+  padding-left: 45%;
+  display:inline-block;
+}
+
+.footer-text .footer-link {
+  cursor: pointer;
+}
+
+#prototype-gallery-container {
+  margin: 2em 6em;
+}
+
+#prototype-img-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#prototype-img-container .close-btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+#prototype-img-container img {
+  margin-right: 1em;
+  margin-top: 1em;
+}
+
+.selected-thumbnail {
+  border: 3px solid black;
 }
