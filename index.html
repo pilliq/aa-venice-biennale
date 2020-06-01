@@ -186,31 +186,6 @@
       mouseNavEnabled,
     })
 
-    // FOOTER
-    //const createFooter = () => {
-    //  const buttons = {
-    //    'connections-button': 'Connections',
-    //    'explore-existing-button': 'Explore Existing',
-    //    'prototype-button': 'Prototypes Library',
-    //    'about-button': 'About',
-    //  }
-    //  const frag = document.createDocumentFragment()
-    //  Object.keys(buttons).map(k => {
-    //    const button = d3.select(document.createElement('div'))
-    //    if (k === 'about-button') {
-    //      button.attr('id', 'footer-about-text')
-    //    } else {
-    //      button.attr('class', 'footer-text')
-    //    }
-    //    button.append('a')
-    //      .attr('id', k)
-    //      .attr('class', 'footer-link')
-    //      .text(buttons[k])
-    //    frag.appendChild(button.node())
-    //  })
-    //  return frag.children
-    //}
-
     // MODAL
     var modal = document.getElementById("on-load-modal");
     var modal_close = document.getElementsByClassName("modal-close")[0];
@@ -307,76 +282,12 @@
       openNav()
     }
 
-    //const closePrototypesGallery = () => {
-    //  $('#footer').css('overflow', 'hidden')
-    //  $('#footer').animate({
-    //    height: '10vh'
-    //  }, 1000, () => {
-    //    $('#footer').html(createFooter())
-    //    unfreezeOutline()
-    //  })
-    //}
-
-    //const createPrototypesGallery = data => {
-    //  const images = data.flatMap(d =>
-    //    d.prototype_images.map(pi => ({
-    //      id: `${OUTLINE_ID_PREFIX}${d.name}`,
-    //      url: pi,
-    //    }))
-    //  )
-    //  const container = d3.select(document.createElement('div'))
-    //    .attr('id', 'prototype-gallery-container')
-
-    //  container.append('div')
-    //    .attr('class', 'close-btn-container')
-    //  .append('span')
-    //    .html('&larr; Return')
-    //    .style('color', 'white')
-    //    .style('cursor', 'pointer')
-    //    .on('click', closePrototypesGallery)
-
-    //  const gallery = container.append('div')
-    //    .attr('id', 'prototype-img-container')
-
-    //  gallery.selectAll('img').data(images)
-    //    .join('img')
-    //      .attr('src', d => d.url)
-    //      .attr('height', 100)
-    //      .style('cursor', 'pointer')
-    //      .on('click', function(d) {
-    //        unfreezeOutline()
-    //        freezeOutline(d.id)
-    //        d3.select(this.parentNode).selectAll('.selected-prototype-img')
-    //          .attr('class', null)
-    //          .attr('height', 100)
-    //        d3.select(this)
-    //          .attr('class', 'selected-prototype-img')
-    //          .attr('height', 350)
-    //        viewer.viewport.goHome()
-    //        viewer.viewport.panTo(new OpenSeadragon.Point(.5,1.05)) // center and slightly downwards bottom
-    //        viewer.viewport.zoomTo(.2)
-    //        console.log(viewer.viewport.getCenter())
-    //      })
-
-    //  return container.node()
-    //}
-
     // INIT
     async function init() {
       let showAll = false
 
       // Get data
       const data = await d3.json('./data/data.json')
-
-      //const prototypesGallery = createPrototypesGallery(data)
-      //$(document).on('click', '#prototype-button', function() {
-      //  $('#footer').css('overflow', 'scroll')
-      //  $('#footer').animate({
-      //    height: '45vh',
-      //  }, 1000, () => {
-      //    $('#footer').html(prototypesGallery)
-      //  })
-      //})
 
       const overlay = d3.select(viewer.svgOverlay().node())
       $(window).resize(() => viewer.svgOverlay().resize())
