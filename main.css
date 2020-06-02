@@ -56,7 +56,7 @@ body {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: rgba(24, 23, 23, .8);
+  background-color: rgba(24, 23, 23, .90);
   overflow-x: hidden;
   padding-top: 60px;
 }
@@ -101,7 +101,9 @@ body {
   margin-top: 1em;
   margin-bottom: 1em;
   font-weight: bold;
+  font-size: 1.35em;
 }
+
 #student-name {
   margin-bottom: 1em;
 }
