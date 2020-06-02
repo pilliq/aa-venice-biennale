@@ -203,7 +203,7 @@ const setSidebarStudent = studentData => {
   setMainImg(studentData.main_image)
   $('#project-title').text(studentMetadata[studentData.name].title)
   $('#student-name').text(studentMetadata[studentData.name].name)
-  $('#project-description').text(studentData.description)
+  $('#project-description').html($(`#student-descriptions #${studentData.name}`).html())
   const images = [studentData.main_image, ...studentData.extra_images]
   const container = d3.select('#extra-images')
   container.selectAll('*').remove()
