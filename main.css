@@ -207,3 +207,22 @@ body {
   border: 1px solid;
 }
 
+
+#about-section-button {
+  position: absolute;
+  pointer-events: none;
+  color: #d2232a;
+  
+  top: 90vh;
+}
+
+#about-button {
+  pointer-events: all;
+
+  margin-top: 2em;
+  text-transform: none;
+  letter-spacing: .1em;
+  font-size: 1em;
+  font-family: Helvetica, sans-serif;
+  font-weight: bold;
+}
