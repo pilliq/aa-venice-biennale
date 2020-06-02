@@ -145,6 +145,35 @@ body {
   padding: 1em;
 }
 
+.sub-section.closed {
+  display: none;
+}
+
+#side-footer .sub-section {
+  margin-top: 1.5em;
+  margin-left: 1em;
+}
+
+#side-footer .section-title .sub-section-title {
+  pointer-events: none;
+  margin-bottom: .45em;
+}
+
+.sub-section-title a.selected {
+  color: #d2232a;
+}
+
+.sub-section-title a {
+  pointer-events: all;
+
+  margin-top: 2em;
+  text-transform: none;
+  letter-spacing: .1em;
+  font-size: .75em;
+  font-family: Helvetica, sans-serif;
+  font-weight: normal;
+}
+
 /* activate pointer events for the links */
 #side-footer a {
   text-shadow: 2px 2px 4px white;
@@ -170,3 +199,11 @@ body {
 .selected-thumbnail {
   border: 3px solid black;
 }
+
+#editor-container {
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  border: 1px solid;
+}
+
