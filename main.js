@@ -12,6 +12,57 @@ const USES_LAYER = 'Layer_2'
 const MATERIALITY_LAYER = 'Layer_3'
 const APPEARANCE_LAYER = 'Layer_4'
 
+const studentMetadata = {
+  Anna: {
+    title: 'Translucent Fields - Infrastructure for Exhibitors',
+    name: 'Anna Starchenko',
+  },
+  Canon: {
+    name: 'Shu Kui Lee',
+    title: 'Civic Space',
+  },
+  Craig: {
+    name: 'Craig Mitchell',
+    title: 'Taking Refuge',
+  },
+  Yuwei: {
+    name: 'Yuwei Cong',
+    title: 'Giardini In Construction – Into the Wall Space',
+  },
+  Beryl: {
+    name: 'Cuicheng Zhang',
+    title: 'Follyscape',
+  },
+  Tommy: {
+    name: 'Hexuan Yu',
+    title: 'Hetero-',
+  },
+  Allister: {
+    name: 'Khun Wong Allister Low',
+    title: 'The Ideas Bazaar',
+  },
+  Zhehao: {
+    name: 'Zhehao Hong',
+    title: 'A place for encounter with the alien',
+  },
+  Selin: {
+    name: 'Selin Arisal',
+    title: 'Exposing the Machine of the Biennale',
+  },
+  May: {
+    name: 'Jihane-May Slaoui',
+    title: 'Vertical Bazaar',
+  },
+  SungVin: {
+    name: 'Sung Vin Cho',
+    title: 'Transnational Landscape',
+  },
+  Tanit: {
+    name: 'Tanit Cabau Wolf',
+    title: 'Terra Incognita, Islands in dissolution',
+  },
+}
+
 // MODAL
 const modal = document.getElementById("on-load-modal");
 const modal_close = document.getElementsByClassName("modal-close")[0];
@@ -82,6 +133,7 @@ document.getElementById('movement-button').addEventListener('click', () => {
   selectSubSection('#movement-button')
   showLayers([HIGHLIGHT_LAYER, MOVEMENT_LAYER])
   disablePointerEvents([MOVEMENT_LAYER])
+  raiseLayer(MOVEMENT_LAYER)
 })
 
 document.getElementById('uses-button').addEventListener('click', () => {
@@ -149,6 +201,8 @@ const setMainImg = url => {
 }
 const setSidebarStudent = studentData => {
   setMainImg(studentData.main_image)
+  $('#project-title').text(studentMetadata[studentData.name].title)
+  $('#student-name').text(studentMetadata[studentData.name].name)
   $('#project-description').text(studentData.description)
   const images = [studentData.main_image, ...studentData.extra_images]
   const container = d3.select('#extra-images')
@@ -190,11 +244,16 @@ const freezeOutline = outlineId => {
 }
 
 const onOutlineOver = function() {
+  const student = d3.select(this).attr('id')
   d3.select(this).style('visibility', 'visible')
+  d3.select(`#${TITLES_LAYER} text`).text()
+  d3.select(`#${TITLES_LAYER} #${student}`).style('visiblity', 'visible')
 }
 
 const onOutlineOut = function() {
+  const student = d3.select(this).attr('id')
   d3.select(this).style('visibility', 'hidden')
+  d3.select(`#${TITLES_LAYER} #${student}`).style('visiblity', 'hidden')
 }
 
 // unfreeze the globally selected outline
