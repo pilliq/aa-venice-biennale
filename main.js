@@ -5,11 +5,26 @@ let mouseNavEnabled = !editMode
 const LAYER_CLASS = 'overlay-layer'
 
 const HIGHLIGHT_LAYER = 'Layer_8'
+const TITLES_LAYER = 'Titles'
 const PROTOTYPE_LAYER = 'Prototype_Library'
 const MOVEMENT_LAYER = 'Layer_5'
 const USES_LAYER = 'Layer_2'
 const MATERIALITY_LAYER = 'Layer_3'
 const APPEARANCE_LAYER = 'Layer_4'
+
+// MODAL
+const modal = document.getElementById("on-load-modal");
+const modal_close = document.getElementsByClassName("modal-close")[0];
+modal_close.onclick = function () {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = e => {
+  if (e.target == modal) {
+    modal.style.display = "none";
+  }
+}
 
 const selectSideTitle = selector => {
   $('.selected-title').removeClass('selected-title')
@@ -29,34 +44,37 @@ const slt = new SimpleLightbox('#giardini-today-gallery a', {
   captionPosition: 'outside',
   maxZoom: 20,
 });
-$('#giardini-today-gallery a').on('close.simplelightbox', function () {
-  console.log('closed')
-})
 
-document.getElementById('porous-giardini-button').addEventListener('click', () => {
-  selectSideTitle('#porous-giardini-button')
-  renderPrototypeLibrary()
+document.getElementById('about-button').addEventListener('click', () => {
+  modal.style.display = 'inherit'
+  $('.modal-intro-content').html($('#about-content').html())
 })
 
 document.getElementById('giardini-intervene-button').addEventListener('click', () => {
   selectSideTitle('#giardini-intervene-button')
   showLayers([HIGHLIGHT_LAYER])
+  unfreezeAllHighlights()
 })
 
 document.getElementById('giardini-today-button').addEventListener('click', () => {
   selectSideTitle('#giardini-today-button')
+  unfreezeAllHighlights()
   slt.open();
 })
 
-const renderPrototypeLibrary = () => {
+document.getElementById('porous-giardini-button').addEventListener('click', () => {
+  selectSideTitle('#porous-giardini-button')
+  showLayers([HIGHLIGHT_LAYER, TITLES_LAYER])
+  freezeAllHighlights()
+  raiseLayer(TITLES_LAYER)
+})
+
+document.getElementById('prototype-library-button').addEventListener('click', () => {
+  selectSideTitle('#porous-giardini-button')
   selectSubSection('#prototype-library-button')
   showLayers([HIGHLIGHT_LAYER, PROTOTYPE_LAYER])
   disablePointerEvents([PROTOTYPE_LAYER])
   raiseLayer(HIGHLIGHT_LAYER)
-}
-document.getElementById('prototype-library-button').addEventListener('click', () => {
-  selectSideTitle('#porous-giardini-button')
-  renderPrototypeLibrary()
 })
 
 document.getElementById('movement-button').addEventListener('click', () => {
@@ -64,7 +82,6 @@ document.getElementById('movement-button').addEventListener('click', () => {
   selectSubSection('#movement-button')
   showLayers([HIGHLIGHT_LAYER, MOVEMENT_LAYER])
   disablePointerEvents([MOVEMENT_LAYER])
-  raiseLayer(HIGHLIGHT_LAYER)
 })
 
 document.getElementById('uses-button').addEventListener('click', () => {
@@ -108,20 +125,6 @@ const viewer = OpenSeadragon({
   mouseNavEnabled,
 })
 
-// MODAL
-var modal = document.getElementById("on-load-modal");
-var modal_close = document.getElementsByClassName("modal-close")[0];
-modal_close.onclick = function () {
-  modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = e => {
-  if (e.target == modal) {
-    modal.style.display = "none";
-  }
-}
-
 // SIDE NAV
 const openNav = () => document.getElementById("mySidenav").style.width = "28%"
 const closeNav = () => {
@@ -163,6 +166,22 @@ const setSidebarStudent = studentData => {
       })
 }
 
+const freezeAllHighlightTitles = () => {
+
+}
+
+const freezeAllHighlights = () => {
+  d3.selectAll(`#${HIGHLIGHT_LAYER} path`)
+    .style('visibility', 'visible')
+    .on('mouseout', null)
+}
+
+const unfreezeAllHighlights = () => {
+  d3.selectAll(`#${HIGHLIGHT_LAYER} path`)
+    .style('visibility', 'hidden')
+    .on('mouseout', onOutlineOut)
+}
+
 const freezeOutline = outlineId => {
   d3.select(`#${outlineId}`)
     .style('visibility', 'visible')
@@ -170,8 +189,13 @@ const freezeOutline = outlineId => {
   selectedOutline = outlineId
 }
 
-const onOutlineOver = function() { d3.select(this).style('visibility', 'visible') }
-const onOutlineOut = function() { d3.select(this).style('visibility', 'hidden') }
+const onOutlineOver = function() {
+  d3.select(this).style('visibility', 'visible')
+}
+
+const onOutlineOut = function() {
+  d3.select(this).style('visibility', 'hidden')
+}
 
 // unfreeze the globally selected outline
 // if outlineId provided, unfreeze provided outlineId instead
@@ -336,26 +360,26 @@ async function init() {
   $(window).resize(() => viewer.svgOverlay().resize())
 
   /* Building outlines */
-  const outlines = await d3.xml('./outlines.svg')
-  const outlineContainer = overlay.append('g')
-  d3.select(outlines).selectAll('g')
-    .each(function() {
-      outlineContainer.node().appendChild(this)
-    })
+  //const outlines = await d3.xml('./outlines.svg')
+  //const outlineContainer = overlay.append('g')
+  //d3.select(outlines).selectAll('g')
+  //  .each(function() {
+  //    outlineContainer.node().appendChild(this)
+  //  })
 
-  // Quadrant selector for elements with ids like '#Outline_x5F_Anna'
-  d3.selectAll(`[id^="${OUTLINE_ID_PREFIX}"]`)
-    .style('visibility', 'hidden')
-    .style('pointer-events', 'all')
-    .on('mouseover', onOutlineOver)
-    .on('mouseout', onOutlineOut)
-    .on('click', function() { selectOutline(data, d3.select(this).attr('id')) })
+  //// Quadrant selector for elements with ids like '#Outline_x5F_Anna'
+  //d3.selectAll(`[id^="${OUTLINE_ID_PREFIX}"]`)
+  //  .style('visibility', 'hidden')
+  //  .style('pointer-events', 'all')
+  //  .on('mouseover', onOutlineOver)
+  //  .on('mouseout', onOutlineOut)
+  //  .on('click', function() { selectOutline(data, d3.select(this).attr('id')) })
 
-  // Set outlines to manually-determined position
-  outlineContainer.attr(
-    'transform',
-    'matrix(0.0014075787724075425,0,0,0.0014075787724075425,0.1329509883327092,0.014575898199770098)',
-  )
+  //// Set outlines to manually-determined position
+  //outlineContainer.attr(
+  //  'transform',
+  //  'matrix(0.0014075787724075425,0,0,0.0014075787724075425,0.1329509883327092,0.014575898199770098)',
+  //)
 
   /* Area outlines */
   const allLayers = await d3.xml('./media/all-layers.svg')
